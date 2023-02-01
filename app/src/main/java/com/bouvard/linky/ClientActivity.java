@@ -20,7 +20,7 @@ public class ClientActivity extends AppCompatActivity {
     private TextView tvReceivedData;
     private EditText etServer_ip, etServer_port;
     private Button connect_server_btn;
-    private onclickConnect connect;
+    private onClickConnect connect;
     private String serverName;
     private int serverPort;
     private Button switchButton;
@@ -46,8 +46,12 @@ public class ClientActivity extends AppCompatActivity {
             }
         });
 
+
         connect_server_btn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
+                serverName = etServer_ip.getText().toString();
+                serverPort = Integer.valueOf(etServer_port.getText().toString());
+                connect = new onClickConnect(serverName,serverPort,tvReceivedData);
                 connect.run();
             }
         });
@@ -55,20 +59,34 @@ public class ClientActivity extends AppCompatActivity {
     }
 };
 
-class onClickConnect(View view) {
-    serverName = etServer_ip.getText().toString();
-    serverPort = Integer.valueOf(etServer_port.getText().toString());
+class onClickConnect extends Thread implements Runnable{
 
-    new Thread(new Runnable() {
+    private String server_ip;
+    private int server_port;
+    private ClientActivity clientact;
+    private TextView tvReceivedData;
+
+
+
+    onClickConnect(String ip, int port, TextView temp){
+        server_ip = ip;
+        server_port = port;
+        tvReceivedData = temp;
+    }
+
+
+
         @Override
         public void run() {
             try {
-                Socket socket = new Socket(serverName,serverPort);
+                Socket socket = new Socket(server_ip,server_port);
 
                 BufferedReader buffer_input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 String txtFromServer = buffer_input.readLine();
 
-                runOnUiThread(new Runnable() {
+
+
+                clientact.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         tvReceivedData.setText(txtFromServer);
@@ -80,8 +98,7 @@ class onClickConnect(View view) {
             }
 
 
-        }
-    }).start();
+    }
 
 }
 
