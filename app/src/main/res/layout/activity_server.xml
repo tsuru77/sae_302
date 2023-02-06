@@ -20,13 +20,17 @@
 
     <Button
         android:id="@+id/btnStart"
-        android:layout_width="150dp"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginLeft="28dp"
+        android:layout_marginEnd="57dp"
+        android:layout_marginRight="57dp"
+        android:layout_marginBottom="50dp"
         android:text="Start"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/btnStop"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/tvStatus"
+        app:layout_constraintEnd_toStartOf="@+id/btnStop"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvServerPort" />
 
@@ -34,26 +38,24 @@
         android:id="@+id/btnStop"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="130dp"
-        android:layout_marginLeft="130dp"
-        android:layout_marginEnd="39dp"
-        android:layout_marginRight="39dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginBottom="299dp"
         android:onClick="onClickStopServer"
         android:text="Stop"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/recycler_view_chat"
-        app:layout_constraintEnd_toStartOf="@+id/tvStatus"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnStart" />
+        app:layout_constraintBottom_toTopOf="@+id/button_send"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnStart"
+        app:layout_constraintTop_toBottomOf="@+id/client_switch_btn" />
 
     <TextView
         android:id="@+id/tvServerIP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="64dp"
-        android:layout_marginEnd="25dp"
-        android:layout_marginRight="25dp"
+        android:layout_marginEnd="38dp"
+        android:layout_marginRight="38dp"
         android:layout_marginBottom="46dp"
         android:text="Server IP"
         android:textSize="34sp"
@@ -65,28 +67,27 @@
         android:id="@+id/tvServerPort"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="7dp"
-        android:layout_marginRight="7dp"
-        android:layout_marginBottom="29dp"
+        android:layout_marginStart="78dp"
+        android:layout_marginLeft="78dp"
+        android:layout_marginBottom="24dp"
         android:text="Server Port"
         android:textSize="34sp"
         app:layout_constraintBottom_toTopOf="@+id/btnStart"
-        app:layout_constraintEnd_toEndOf="@+id/btnStart"
+        app:layout_constraintStart_toStartOf="@+id/btnStart"
         app:layout_constraintTop_toBottomOf="@+id/tvServerIP" />
 
     <TextView
         android:id="@+id/tvStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="36dp"
-        android:layout_marginRight="36dp"
-        android:layout_marginBottom="307dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="65dp"
         android:text="status"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/button_send"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnStop"
-        app:layout_constraintTop_toBottomOf="@+id/client_switch_btn" />
+        app:layout_constraintBottom_toTopOf="@+id/recycler_view_chat"
+        app:layout_constraintEnd_toStartOf="@+id/btnStop"
+        app:layout_constraintTop_toBottomOf="@+id/btnStart" />
 
     <Button
         android:id="@+id/client_switch_btn"
@@ -95,9 +96,9 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="25dp"
         android:layout_marginRight="25dp"
-        android:layout_marginBottom="226dp"
+        android:layout_marginBottom="168dp"
         android:text="Client"
-        app:layout_constraintBottom_toTopOf="@+id/tvStatus"
+        app:layout_constraintBottom_toTopOf="@+id/btnStop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -114,7 +115,7 @@
         app:layout_constraintBottom_toTopOf="@+id/editText_message"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnStop" />
+        app:layout_constraintTop_toBottomOf="@+id/tvStatus" />
 
     <EditText
         android:id="@+id/editText_message"
@@ -143,6 +144,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/editText_message"
-        app:layout_constraintTop_toBottomOf="@+id/tvStatus" />
+        app:layout_constraintTop_toBottomOf="@+id/btnStop" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
