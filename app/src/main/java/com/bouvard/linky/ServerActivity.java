@@ -1,7 +1,5 @@
 package com.bouvard.linky;
 
-import static java.net.InetAddress.getLocalHost;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,23 +10,29 @@ import android.widget.TextView;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 public class ServerActivity extends Activity {
 
     private TextView tvServerIP, tvServerPort, tvStatus;
     private String serverIP;
-    private int serverPort = 1234; // il faudra peut etre changer le port
+    private int serverPort = 4343; // might need to change the port
     private Button switchButton;
     private Button StartServer;
     private ServerThread launch;
     private Button StopServer;
     private ServerThread stop;
+    private ArrayList<ClientHandler> clients;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +51,6 @@ public class ServerActivity extends Activity {
         tvServerPort = findViewById(R.id.tvServerPort);
         tvStatus = findViewById(R.id.tvStatus);
 
-
-
         tvServerIP.setText(serverIP);
         tvServerPort.setText(String.valueOf(serverPort));
 
@@ -58,19 +60,23 @@ public class ServerActivity extends Activity {
 
         StopServer = findViewById(R.id.btnStop);
 
+        clients = new ArrayList<ClientHandler>();
 
         StartServer.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 launch = new ServerThread();
-                launch.startServer();
+                launch.start();
             }
         });
 
         StopServer.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                stop.stopServer();
+                if (launch != null) {
+                    launch.stopServer();
+                }
             }
         });
+
 
 
         switchButton.setOnClickListener(new View.OnClickListener() {
@@ -79,100 +85,116 @@ public class ServerActivity extends Activity {
                 startActivity(intent);
             }
         });
+    }
 
-    }//on create
-
-    //public void onClickStopServer(View view){
-    //   serverThread.stopServer();
-    //  }
-
-
-
-
-    class ServerThread extends Thread implements Runnable {
-
-        private boolean serverRunning;
+    public class ServerThread extends Thread {
+        private boolean running = false;
         private ServerSocket serverSocket;
-        private int count=0;
 
-        public void startServer(){
-
-            //commence le thread
-            serverRunning=true;
-            start();
-        }
-
-        @Override
         public void run() {
             try {
                 serverSocket = new ServerSocket(serverPort);
+
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        tvStatus.setText("waiting for client");
+                        tvStatus.setText("Server started");
                     }
                 });
-
-                while(serverRunning){
-
-                    Socket socket = serverSocket.accept(); //on accepte un nouveau cliuent
-                    count++;
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            tvStatus.setText("connected to : " + socket.getInetAddress() + ":" + socket.getLocalPort());
-                        }
-                    });
-
-                    PrintWriter output_server = new PrintWriter(socket.getOutputStream());
-                    output_server.write("Welcome to server :"+count);
-                    output_server.flush();
-
-                    socket.close();
-
-
-
+                while (running) {
+                    Socket client = serverSocket.accept();
+                    ClientHandler clientThread = new ClientHandler(client);
+                    clients.add(clientThread);
+                    clientThread.start();
                 }
-
-
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-
         }
 
-        public void stopServer(){
-            serverRunning=false;
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    if(serverSocket!=null){
-                        try {
-                            serverSocket.close();
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    tvStatus.setText("server is stopped");
-                                }
-                            });
+        public void startServer() {
+            try {
+                serverSocket = new ServerSocket(serverPort);
+                running = true;
+                tvStatus.setText("Waiting for clients...");
+                while (running) {
+                    Socket socket = serverSocket.accept();
+                    ClientHandler clientHandler = new ClientHandler(socket);
+                    clientHandler.start();
+                    clients.add(clientHandler);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void stopServer() {
+            try {
+                running = false;
+                for (ClientHandler clientHandler : clients) {
+                    clientHandler.stopClient();
+                }
+                serverSocket.close();
+                tvStatus.setText("Server stopped");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 
 
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+    private class ClientHandler extends Thread {
+        private Socket client;
+        private BufferedReader reader;
+        private PrintWriter writer;
+
+        public ClientHandler(Socket client) {
+            this.client = client;
+        }
+
+        public void run() {
+            try {
+                reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                writer = new PrintWriter(client.getOutputStream(), true);
+
+                String message;
+                while ((message = reader.readLine()) != null) {
+                    try {
+                        JSONObject json = new JSONObject(message);
+                        // process the received message
+                        processMessage(json);
+                    } catch (JSONException e) {
+                        // handle the exception if the received message is not a valid JSON
+                        e.printStackTrace();
                     }
                 }
-            }).start();
-        }// stop server
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (reader != null) reader.close();
+                    if (writer != null) writer.close();
+                    if (client != null) client.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
+        private void processMessage(JSONObject message) {
+            // your code to process the received message
+        }
 
-
-    }//server thread
-
-
+        public void stopClient() {
+            try {
+                if (reader != null) reader.close();
+                if (writer != null) writer.close();
+                if (client != null) client.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 }

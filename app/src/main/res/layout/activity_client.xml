@@ -10,13 +10,13 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginRight="1dp"
         android:text="Client"
         android:textSize="35sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.137" />
+        app:layout_constraintEnd_toStartOf="@+id/rec_data"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tete"
@@ -32,32 +32,35 @@
         android:id="@+id/etServer_ip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
-        android:layout_marginLeft="2dp"
-        android:layout_marginBottom="53dp"
+        android:layout_marginStart="3dp"
+        android:layout_marginLeft="3dp"
+        android:layout_marginTop="7dp"
         android:ems="10"
         android:hint="Server IP"
         android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/etServer_port"
-        app:layout_constraintStart_toStartOf="@+id/etServer_port" />
+        app:layout_constraintStart_toStartOf="@+id/etServer_port"
+        app:layout_constraintTop_toBottomOf="@+id/rec_data"
+        tools:ignore="MissingConstraints" />
 
     <EditText
         android:id="@+id/etServer_port"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="321dp"
+        android:layout_marginTop="19dp"
         android:ems="10"
         android:hint="Server Port"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/etServer_ip" />
 
     <Button
         android:id="@+id/server_connect_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginRight="5dp"
         android:text="Connect to server"
         app:layout_constraintEnd_toEndOf="@+id/etServer_port"
         app:layout_constraintTop_toBottomOf="@+id/etServer_port" />
@@ -66,22 +69,63 @@
         android:id="@+id/rec_data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="35dp"
-        android:layout_marginLeft="35dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="104dp"
+        android:layout_marginEnd="27dp"
+        android:layout_marginRight="27dp"
         android:hint="Message from server"
-        app:layout_constraintStart_toStartOf="@+id/etServer_ip"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/server_switch_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="19dp"
-        android:layout_marginEnd="21dp"
-        android:layout_marginRight="21dp"
+        android:layout_marginEnd="18dp"
+        android:layout_marginRight="18dp"
         android:text="Server"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_chat"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="21dp"
+        android:layout_marginLeft="21dp"
+        android:layout_marginTop="69dp"
+        android:layout_marginEnd="21dp"
+        android:layout_marginRight="21dp"
+        android:layout_marginBottom="63dp"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/btn_send"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/server_connect_btn" />
+
+    <EditText
+        android:id="@+id/et_message"
+        android:layout_width="0dp"
+        android:layout_height="49dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginEnd="9dp"
+        android:layout_marginRight="9dp"
+        android:hint="Type your message here"
+        app:layout_constraintBaseline_toBaselineOf="@+id/btn_send"
+        app:layout_constraintEnd_toStartOf="@+id/btn_send"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btn_send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="81dp"
+        android:text="Send"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
