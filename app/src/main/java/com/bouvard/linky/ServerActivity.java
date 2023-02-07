@@ -26,13 +26,14 @@ public class ServerActivity extends Activity {
 
     private TextView tvServerIP, tvServerPort, tvStatus;
     private String serverIP;
-    private int serverPort = 4343; // might need to change the port
+    private int serverPort = 4343;
     private Button switchButton;
     private Button StartServer;
     private ServerThread launch;
     private Button StopServer;
     private ServerThread stop;
     private ArrayList<ClientHandler> clients;
+    private TextView tvIncomingMessages;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,7 +104,7 @@ public class ServerActivity extends Activity {
                 });
                 while (running) {
                     Socket client = serverSocket.accept();
-                    ClientHandler clientThread = new ClientHandler(client);
+                    ClientHandler clientThread = new ClientHandler(client, tvIncomingMessages);
                     clients.add(clientThread);
                     clientThread.start();
                 }
@@ -119,7 +120,7 @@ public class ServerActivity extends Activity {
                 tvStatus.setText("Waiting for clients...");
                 while (running) {
                     Socket socket = serverSocket.accept();
-                    ClientHandler clientHandler = new ClientHandler(socket);
+                    ClientHandler clientHandler = new ClientHandler(socket, tvIncomingMessages);
                     clientHandler.start();
                     clients.add(clientHandler);
                 }
@@ -148,53 +149,46 @@ public class ServerActivity extends Activity {
         private Socket client;
         private BufferedReader reader;
         private PrintWriter writer;
+        private TextView tvIncomingMessages;
 
-        public ClientHandler(Socket client) {
+        public ClientHandler(Socket client, TextView tvIncomingMessages) {
             this.client = client;
+            this.tvIncomingMessages = tvIncomingMessages;
+            try {
+                reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                writer = new PrintWriter(client.getOutputStream(), true);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         public void run() {
             try {
-                reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                writer = new PrintWriter(client.getOutputStream(), true);
-
                 String message;
                 while ((message = reader.readLine()) != null) {
-                    try {
-                        JSONObject json = new JSONObject(message);
-                        // process the received message
-                        processMessage(json);
-                    } catch (JSONException e) {
-                        // handle the exception if the received message is not a valid JSON
-                        e.printStackTrace();
-                    }
+                    final String finalMessage = message;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tvIncomingMessages.append(finalMessage + "\n");
+                        }
+                    });
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
-                try {
-                    if (reader != null) reader.close();
-                    if (writer != null) writer.close();
-                    if (client != null) client.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
-        }
-
-        private void processMessage(JSONObject message) {
-            // your code to process the received message
         }
 
         public void stopClient() {
             try {
-                if (reader != null) reader.close();
-                if (writer != null) writer.close();
-                if (client != null) client.close();
+                client.close();
+                reader.close();
+                writer.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
-
 }
+
+
